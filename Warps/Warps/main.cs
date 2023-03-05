@@ -41,6 +41,8 @@ namespace Warps
             BepInEx.Logging.Logger.Sources.Add(DLog);
 
             ClassInjector.RegisterTypeInIl2Cpp<WarpsComponent>();
+            ClassInjector.RegisterTypeInIl2Cpp<WarpsMenu>();
+
             var go = new GameObject("WarpsMod") { hideFlags = HideFlags.HideAndDontSave };
             go.AddComponent<WarpsComponent>();
             GameObject.DontDestroyOnLoad(go);
@@ -66,42 +68,21 @@ namespace Warps
             
             Mache.Mache.RegisterMod(() =>
             {
-                var uiBase = UniversalUI.RegisterUI(Warps.GUID, OnMenuUpdate);
-                Menu = new WarpsMenu(uiBase);
-
                 return new ModDetails
                 {
                     Id = Warps.GUID,
                     Version = Warps.VERSION,
                     Name = Warps.NAME,
                     Description = "Create custom warps to teleport around the world",
-                    OnMenuShow = ShowMenu
-                    //OnFinishedCreating = (parent) => { }
-                };
+                    OnFinishedCreating = CreateMenu
+                    //OnMenuShow = ShowMenu,
+            };
             });
         }
 
-        void Update()
+        private void CreateMenu(GameObject parent)
         {
-            if (Input.GetKeyDown(Warps.menu_key.Value))
-            {
-                Menu.Toggle();
-                GameObject pmObj = GameObject.Find("PlayerStandin/PlayerUI/ScreenSpaceCanvas/PauseMenu");
-                if (Menu.Enabled && pmObj != null)
-                {
-                    Sons.Gui.PauseMenu pm = pmObj.GetComponent<Sons.Gui.PauseMenu>();
-                    pm.Open();
-                }
-                else if (pmObj != null)
-                {
-                    Sons.Gui.PauseMenu pm = pmObj.GetComponent<Sons.Gui.PauseMenu>();
-                    pm.Close();
-                }
-            }
-            if (Input.GetKeyDown(KeyCode.Escape) && Menu.Enabled)
-            {
-                Menu.Toggle();
-            }
+            parent.AddComponent<WarpsMenu>();
         }
 
         public static bool IsInGame()
@@ -308,40 +289,5 @@ namespace Warps
                 LocalPlayer.TeleportTo(new Vector3(pos[0], pos[1], pos[2]), LocalPlayer.GameObject.transform.rotation); 
             } 
         }
-
-        private void ShowMenu()
-        {
-            Menu.SetActive(true);
-        }
-
-        public void CreateMenu(GameObject parent)
-        {
-            MenuPanel.Builder()
-                .AddComponent(new LabelComponent
-                {
-                    Text = "Hello World!",
-                    FontSize = 24
-                })
-                .BuildToTarget(parent);
-        }
-
-        private void OnMenuUpdate() { }
     }
-    
-
-    /*
-    [HarmonyPatch(typeof(Sons.Player.CameraShakeController), "IsCameraShakeAllowed")]
-    public static class Patcher
-    {
-
-        private static bool Prefix(ref bool __result)
-        {
-            if (Flight.flying)
-            {
-                return false;
-            }
-            return __result;
-        }
-    }
-    */
 }

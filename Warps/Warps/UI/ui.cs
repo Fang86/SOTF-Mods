@@ -7,7 +7,6 @@ using UniverseLib;
 using UniverseLib.UI;
 using Mache;
 using Warps;
-using static Warps.WarpsComponent;
 using Il2CppInterop.Runtime;
 using System.Reflection;
 using System.IO;
@@ -17,24 +16,22 @@ using Mache.UI;
 
 namespace Warps.UI
 {
-    class WarpsMenu : UniverseLib.UI.Panels.PanelBase
+    internal class WarpsMenu : MonoBehaviour
     {
-        public override string Name => "Warps";
-        public override int MinWidth => 650;
-        public override int MinHeight => 510;
-        public override Vector2 DefaultAnchorMin => new Vector2(0f, 0f);
-        public override Vector2 DefaultAnchorMax => new Vector2(0f, 0f);
-        public override Vector2 DefaultPosition => new Vector2(-350f, 600f);
-        public override bool CanDragAndResize => true;
-
-        public WarpsMenu(UIBase owner) : base(owner) { }
+        public static WarpsMenu Instance { get; private set; }
 
         internal static GameObject warpsListScrollview;
         internal static List<GameObject> warpElements = new List<GameObject>();
 
+        private GameObject content;
+
+        private void Start()
+        {
+            ConstructContent(gameObject);
+        }
+
         internal void AddWarp(string name)
         {
-            //
             var warpListElement = UIFactory.CreateHorizontalGroup(warpsListScrollview, $"warp_{name}_row", true, false, true, true, spacing: 10, padding: new Vector4(10, 10, 10, 10), bgColor: Color.black);
 
             Text warpLabel = UIFactory.CreateLabel(warpListElement, $"warp_{name}_label", name, TextAnchor.MiddleCenter);
@@ -48,10 +45,10 @@ namespace Warps.UI
 
             warpToButton.OnClick = () =>
             {
-                DLog.LogMessage($"Warp to: {name}");
-                if (IsInGame())
+                WarpsComponent.DLog.LogMessage($"Warp to: {name}");
+                if (WarpsComponent.IsInGame())
                 {
-                    WarpTo(name);
+                    WarpsComponent.WarpTo(name);
                 }
             };
 
@@ -62,10 +59,10 @@ namespace Warps.UI
 
             warpDeleteButton.OnClick = () =>
             {
-                DLog.LogMessage($"Delete warp: {name}");
-                if (IsInGame())
+                WarpsComponent.DLog.LogMessage($"Delete warp: {name}");
+                if (WarpsComponent.IsInGame() || true)
                 {
-                    DeleteWarp(name);
+                    WarpsComponent.DeleteWarp(name);
                     warpElements.Remove(warpListElement);
                     GameObject.Destroy(warpListElement);
                 }
@@ -79,15 +76,13 @@ namespace Warps.UI
             warpElements.Add(warpListElement);
         }
 
-        protected override void ConstructPanelContent()
+        internal void ConstructContent(GameObject root)
         {
             // Menu container //
-            var container = UIFactory.CreateVerticalGroup(ContentRoot, "warps_col", true, false, true, true, spacing: 10, padding: new Vector4(10, 10, 10, 10));
-
+            content = UIFactory.CreateVerticalGroup(root, "warps_col", true, false, true, true, spacing: 10, padding: new Vector4(10, 10, 10, 10));
 
             // New Warp //
-
-            var new_warp_container = UIFactory.CreateHorizontalGroup(container, "new_warp_row", true, false, true, true, spacing: 10, padding: new Vector4(10, 10, 10, 10));
+            var new_warp_container = UIFactory.CreateHorizontalGroup(content, "new_warp_row", true, false, true, true, spacing: 10, padding: new Vector4(10, 10, 10, 10));
 
             Text newWarpLabel = UIFactory.CreateLabel(new_warp_container, "new_warp_label", "New Warp", TextAnchor.MiddleRight);
             UIFactory.SetLayoutElement(newWarpLabel.gameObject, minWidth: 85, minHeight: 30, flexibleWidth: 0);
@@ -100,22 +95,20 @@ namespace Warps.UI
 
 
             // Warps List //
-
-            var warpListContainer = UIFactory.CreateHorizontalGroup(container, "warp_list_row", true, true, true, true, 2, new Vector4(3, 3, 3, 3), new Color(0.1f, 0.1f, 0.1f));
+            var warpListContainer = UIFactory.CreateHorizontalGroup(content, "warp_list_row", true, true, true, true, 2, new Vector4(3, 3, 3, 3), new Color(0.1f, 0.1f, 0.1f));
 
             var warpListView = UIFactory.CreateScrollView(warpListContainer, "warp_list_scrollview", out var scrollview, out _);
-            UIFactory.SetLayoutElement(warpListView, flexibleWidth: 9999);
+            UIFactory.SetLayoutElement(warpListView, minHeight: 400, flexibleWidth: 9999);
             warpsListScrollview = scrollview;
             UIFactory.CreateVerticalGroup(scrollview, "scrollview_vert_group", true, false, true, true, spacing: 10, bgColor: new Color(0.05f, 1.0f, 0.05f));
 
             
             // Event Handlers //
-            
             newWarpButton.OnClick = () =>
             {
-                if (IsInGame())
+                if (WarpsComponent.IsInGame())
                 {
-                    if (!SetWarp(newWarpInput.Text))
+                    if (!WarpsComponent.SetWarp(newWarpInput.Text))
                     {
                         AddWarp(newWarpInput.Text);
                     }
@@ -130,10 +123,7 @@ namespace Warps.UI
                     AddWarp(warp);
                 }
             }
-
-            SetActive(false);
         }
-
 
         private static string[] GetOptions()
         {
