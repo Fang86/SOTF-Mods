@@ -1,0 +1,17 @@
+#Warps
+Warps/.vs/
+Warps/release/
+Warps/Warps/bin/
+Warps/Warps/obj/
+
+#FastInventoryPan
+FastInventoryPan/.vs/
+FastInventoryPan/release/
+FastInventoryPan/FastInventoryPan/bin/
+FastInventoryPan/FastInventoryPan/obj/
+
+#Flight
+Flight/.vs/
+Flight/release/
+Flight/Flight/bin/
+Flight/Flight/obj/
