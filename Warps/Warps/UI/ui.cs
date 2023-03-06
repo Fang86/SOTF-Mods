@@ -13,6 +13,7 @@ using System.IO;
 using System.Collections.Generic;
 using UniverseLib.UI.Models;
 using Mache.UI;
+using static Warps.WarpsComponent;
 
 namespace Warps.UI
 {
@@ -32,6 +33,7 @@ namespace Warps.UI
 
         internal void AddWarp(string name)
         {
+            // Warp Element //
             var warpListElement = UIFactory.CreateHorizontalGroup(warpsListScrollview, $"warp_{name}_row", true, false, true, true, spacing: 10, padding: new Vector4(10, 10, 10, 10), bgColor: Color.black);
 
             Text warpLabel = UIFactory.CreateLabel(warpListElement, $"warp_{name}_label", name, TextAnchor.MiddleCenter);
@@ -45,10 +47,10 @@ namespace Warps.UI
 
             warpToButton.OnClick = () =>
             {
-                WarpsComponent.DLog.LogMessage($"Warp to: {name}");
-                if (WarpsComponent.IsInGame())
+                DLog.LogMessage($"Warp to: {name}");
+                if (IsInGame())
                 {
-                    WarpsComponent.WarpTo(name);
+                    WarpTo(name);
                 }
             };
 
@@ -59,10 +61,10 @@ namespace Warps.UI
 
             warpDeleteButton.OnClick = () =>
             {
-                WarpsComponent.DLog.LogMessage($"Delete warp: {name}");
-                if (WarpsComponent.IsInGame() || true)
+                DLog.LogMessage($"Delete warp: {name}");
+                if (IsInGame() || true)
                 {
-                    WarpsComponent.DeleteWarp(name);
+                    DeleteWarp(name);
                     warpElements.Remove(warpListElement);
                     GameObject.Destroy(warpListElement);
                 }
@@ -106,9 +108,9 @@ namespace Warps.UI
             // Event Handlers //
             newWarpButton.OnClick = () =>
             {
-                if (WarpsComponent.IsInGame())
+                if (IsInGame())
                 {
-                    if (!WarpsComponent.SetWarp(newWarpInput.Text))
+                    if (!SetWarp(newWarpInput.Text))
                     {
                         AddWarp(newWarpInput.Text);
                     }
@@ -144,24 +146,5 @@ namespace Warps.UI
 
             return items.ToArray();
         }
-
-        // Refresh dropdown options
-        private static void Refresh(Dropdown drop)
-        {
-            drop.ClearOptions();
-
-            string[] ops = GetOptions();
-            if (ops.Length > 0)
-            {
-                var options = ops.ToList<string>();
-                var il_options = new Il2CppSystem.Collections.Generic.List<string>();
-                foreach (var item in options)
-                {
-                    il_options.Add(item);
-                }
-                drop.AddOptions(il_options);
-            }
-        }
-
     }
 }

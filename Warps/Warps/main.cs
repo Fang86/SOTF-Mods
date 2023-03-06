@@ -18,6 +18,7 @@ using Mache;
 using Il2CppInterop.Runtime;
 using System.Linq;
 using Mache.UI;
+using Bolt;
 
 namespace Warps
 {
@@ -26,15 +27,13 @@ namespace Warps
     {
         public const string GUID = "fang86.Warps";
         public const string NAME = "Warps";
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.1.0";
 
         public static ManualLogSource DLog = new ManualLogSource("DLog");
         public static bool flying = false;
 
         public static ConfigFile configFile = new ConfigFile(Path.Combine(Paths.ConfigPath, "Warps.cfg"), true);
-        public static ConfigEntry<KeyCode> menu_key = configFile.Bind("General", "Menu key", KeyCode.K, "Hotkey to open the Warps menu");
-        //public static ConfigEntry<float> window_x = configFile.Bind("General", "x", 0.0f, "Window x position");
-        //public static ConfigEntry<float> window_y = configFile.Bind("General", "y", 0.0f, "Window y position");
+        public static ConfigEntry<KeyCode> menu_key = configFile.Bind("General", "Menu key", KeyCode.F9, "Hotkey to open the Warps menu");
 
         public override void Load()
         {
@@ -49,16 +48,12 @@ namespace Warps
 
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), null);
 
-            //Instance = this;
-            //AddComponent<WarpsComponent>();
-
             Log.LogInfo($"Loaded {NAME} {VERSION} by Fang86");
         }
     }
 
     public class WarpsComponent : MonoBehaviour
     {
-        private static WarpsMenu Menu { get; set; }
         public static ManualLogSource DLog = Warps.DLog;
         
         private static string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Warps/Warps.txt";
@@ -76,8 +71,17 @@ namespace Warps
                     Description = "Create custom warps to teleport around the world",
                     OnFinishedCreating = CreateMenu
                     //OnMenuShow = ShowMenu,
-            };
+                };
             });
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(Warps.menu_key.Value)) 
+            {
+                Mache.Mache.SetOverlayActive(true);
+                Mache.Mache.SetOverlayActiveMod(Warps.GUID);
+            }
         }
 
         private void CreateMenu(GameObject parent)
@@ -133,11 +137,11 @@ namespace Warps
             return null;
         }
 
-        public static Dictionary<String, String> GetWarps()
+        public static Dictionary<string, string> GetWarps()
         {
             DLog.LogMessage("Getting all warps");
             string[] lines = File.ReadAllLines(path);
-            Dictionary<String, String> warp_list = new Dictionary<String, String>();
+            Dictionary<string, string> warp_list = new Dictionary<string, string>();
 
             if (lines.Length != 0)
             {
@@ -181,7 +185,7 @@ namespace Warps
             }
 
             Vector3 pos = LocalPlayer.GameObject.transform.position;
-            string line_text = name + "=" + pos.x + ", " + pos.y + ", " + pos.z;
+            string line_text = name + "=" + (int)pos.x + ", " + (int)pos.y + ", " + (int)pos.z;
             string[] lines = File.ReadAllLines(path);
 
             //DLog.LogInfo($"Setting warp {name} at " + pos.x + ", " + pos.y + ", " + pos.z);
@@ -290,4 +294,5 @@ namespace Warps
             } 
         }
     }
+
 }

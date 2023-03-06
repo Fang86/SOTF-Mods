@@ -40,6 +40,18 @@
     <Reference Include="BepInEx.Unity.IL2CPP">
       <HintPath>F:\SteamLibrary\steamapps\common\Sons Of The Forest\BepInEx\core\BepInEx.Unity.IL2CPP.dll</HintPath>
     </Reference>
+    <Reference Include="bolt, Version=0.4.3.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\SteamLibrary\steamapps\common\Sons Of The Forest\BepInEx\interop\bolt.dll</HintPath>
+    </Reference>
+    <Reference Include="Bolt.Unity, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\SteamLibrary\steamapps\common\Sons Of The Forest\BepInEx\interop\Bolt.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="bolt.user, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\SteamLibrary\steamapps\common\Sons Of The Forest\BepInEx\interop\bolt.user.dll</HintPath>
+    </Reference>
     <Reference Include="Il2CppInterop.HarmonySupport">
       <HintPath>F:\SteamLibrary\steamapps\common\Sons Of The Forest\BepInEx\core\Il2CppInterop.HarmonySupport.dll</HintPath>
     </Reference>
